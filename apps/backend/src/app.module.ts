@@ -25,6 +25,7 @@ import { envValidation } from './core/config/env.validation';
             isGlobal: true,
             cache: true,
             validate: envValidation,
+            envFilePath: ['../../.env', '.env'],
         }),
 
         // Core infrastructure modules

@@ -11,6 +11,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { BillingService } from './billing.service';
 import { Public } from '../auth/decorators/public.decorator';
+import { SubscriptionStatus } from '@prisma/client';
 
 /**
  * Webhook payload structure (generic - adapt for specific providers)
@@ -21,6 +22,7 @@ interface WebhookPayload {
         userId?: string;
         toolId?: string;
         externalId?: string;
+        customerId?: string; // Added customerId
         amount?: number;
         currency?: string;
         status?: string;
@@ -115,12 +117,12 @@ export class BillingController {
                 break;
 
             case 'subscription.created':
-                if (data.userId) {
+                if (data.userId && data.externalId && data.planId) {
                     await this.billingService.createSubscription({
                         userId: data.userId,
-                        externalId: data.externalId,
-                        planId: data.planId,
-                        planName: data.planName,
+                        razorpaySubscriptionId: data.externalId,
+                        razorpayPlanId: data.planId,
+                        razorpayCustomerId: data.customerId || '',
                         periodStart: data.periodStart ? new Date(data.periodStart) : undefined,
                         periodEnd: data.periodEnd ? new Date(data.periodEnd) : undefined,
                     });
@@ -152,16 +154,18 @@ export class BillingController {
     /**
      * Map external status to internal status
      */
-    private mapSubscriptionStatus(status?: string): 'ACTIVE' | 'PAST_DUE' | 'CANCELLED' | 'PAUSED' | 'TRIALING' {
-        const statusMap: Record<string, 'ACTIVE' | 'PAST_DUE' | 'CANCELLED' | 'PAUSED' | 'TRIALING'> = {
-            active: 'ACTIVE',
-            trialing: 'TRIALING',
-            past_due: 'PAST_DUE',
-            paused: 'PAUSED',
-            cancelled: 'CANCELLED',
-            canceled: 'CANCELLED',
+    private mapSubscriptionStatus(status?: string): SubscriptionStatus {
+        const statusMap: Record<string, SubscriptionStatus> = {
+            active: SubscriptionStatus.ACTIVE,
+            trialing: SubscriptionStatus.ACTIVE, // Treat trial as active
+            past_due: SubscriptionStatus.HALTED,
+            paused: SubscriptionStatus.HALTED,
+            cancelled: SubscriptionStatus.CANCELLED,
+            canceled: SubscriptionStatus.CANCELLED,
+            completed: SubscriptionStatus.COMPLETED,
+            created: SubscriptionStatus.CREATED,
         };
 
-        return statusMap[status?.toLowerCase() || ''] || 'ACTIVE';
+        return statusMap[status?.toLowerCase() || ''] || SubscriptionStatus.ACTIVE;
     }
 }

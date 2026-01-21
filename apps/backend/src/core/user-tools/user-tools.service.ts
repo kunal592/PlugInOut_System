@@ -289,7 +289,7 @@ export class UserToolsService {
         slug: string;
         name: string;
         description: string | null;
-        price: number;
+        basePrice: number;
         pricingType: string;
         icon: string | null;
         category: string | null;
@@ -314,7 +314,7 @@ export class UserToolsService {
                 slug: true,
                 name: true,
                 description: true,
-                price: true,
+                basePrice: true,
                 pricingType: true,
                 icon: true,
                 category: true,

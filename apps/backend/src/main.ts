@@ -48,7 +48,7 @@ async function bootstrap() {
     // Graceful shutdown
     app.enableShutdownHooks();
 
-    const port = configService.get<number>('PORT', 3001);
+    const port = configService.get<number>('API_PORT', 3001);
 
     await app.listen(port, '0.0.0.0');
 

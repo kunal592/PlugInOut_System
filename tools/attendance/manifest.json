@@ -1,0 +1,15 @@
+{
+    "slug": "attendance",
+    "name": "Attendance Tracker",
+    "description": "Track employee clock-in/out, manage attendance records, and generate monthly reports.",
+    "version": "1.0.0",
+    "enabled": true,
+    "price": 19900,
+    "pricingType": "SUBSCRIPTION",
+    "category": "hr",
+    "routes": "/tools/attendance",
+    "icon": "user-check",
+    "permissions": [
+        "USER"
+    ]
+}

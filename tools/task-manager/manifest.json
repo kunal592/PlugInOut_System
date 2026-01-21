@@ -1,0 +1,15 @@
+{
+    "slug": "task-manager",
+    "name": "Task Manager",
+    "description": "Create, organize, and track tasks with priorities, due dates, and status management.",
+    "version": "1.0.0",
+    "enabled": true,
+    "price": 14900,
+    "pricingType": "ONE_TIME",
+    "category": "productivity",
+    "routes": "/tools/task-manager",
+    "icon": "check-square",
+    "permissions": [
+        "USER"
+    ]
+}

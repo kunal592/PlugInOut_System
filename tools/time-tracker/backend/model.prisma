@@ -1,0 +1,32 @@
+// Time Tracker - Database Schema
+// Prefix: tool_time_*
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+generator client {
+    provider = "prisma-client-js"
+    output   = "../../../node_modules/@prisma/client-tool-time-tracker"
+}
+
+model tool_time_Entry {
+    id          String    @id @default(uuid())
+    userId      String
+    description String?
+    projectId   String?
+    taskId      String?
+    startTime   DateTime
+    endTime     DateTime?
+    duration    Int?      // Duration in seconds
+    isRunning   Boolean   @default(false)
+    tags        String[]  @default([])
+    createdAt   DateTime  @default(now())
+    updatedAt   DateTime  @updatedAt
+
+    @@index([userId])
+    @@index([startTime])
+    @@index([isRunning])
+    @@map("tool_time_entries")
+}

@@ -108,7 +108,7 @@ export class ManifestReader {
     /**
      * Get the manifest schema for documentation
      */
-    getManifestSchema(): z.ZodType<PluginManifest> {
+    getManifestSchema(): z.ZodType<PluginManifest, z.ZodTypeDef, any> {
         return ManifestSchema;
     }
 }

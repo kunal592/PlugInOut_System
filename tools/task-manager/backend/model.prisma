@@ -1,0 +1,30 @@
+// Task Manager - Database Schema
+// Prefix: tool_task_*
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+generator client {
+    provider = "prisma-client-js"
+    output   = "../../../node_modules/@prisma/client-tool-task-manager"
+}
+
+model tool_task_Task {
+    id          String   @id @default(uuid())
+    userId      String
+    title       String
+    description String?
+    status      String   @default("TODO") // TODO, IN_PROGRESS, DONE
+    priority    String   @default("MEDIUM") // LOW, MEDIUM, HIGH, URGENT
+    dueDate     DateTime?
+    tags        String[] @default([])
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+
+    @@index([userId])
+    @@index([status])
+    @@index([dueDate])
+    @@map("tool_task_tasks")
+}

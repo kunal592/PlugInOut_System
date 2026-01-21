@@ -74,8 +74,8 @@ export class EventPublisher {
                         aggregateType: event.aggregateType,
                         aggregateId: event.aggregateId,
                         userId: event.userId,
-                        payload: event.payload,
-                        timestamp: event.timestamp,
+                        payload: event.payload as any,
+                        createdAt: event.timestamp,
                     },
                 }),
             ),
@@ -104,7 +104,7 @@ export class EventPublisher {
                 aggregateType,
                 aggregateId,
             },
-            orderBy: { timestamp: 'asc' },
+            orderBy: { createdAt: 'asc' },
         });
 
         return events.map((e) => ({
@@ -115,7 +115,7 @@ export class EventPublisher {
             aggregateId: e.aggregateId || undefined,
             userId: e.userId || undefined,
             payload: e.payload as Record<string, unknown>,
-            timestamp: e.timestamp,
+            timestamp: e.createdAt,
         }));
     }
 
@@ -131,8 +131,8 @@ export class EventPublisher {
                 aggregateType: event.aggregateType,
                 aggregateId: event.aggregateId,
                 userId: event.userId,
-                payload: event.payload,
-                timestamp: event.timestamp,
+                payload: event.payload as any,
+                createdAt: event.timestamp,
             },
         });
     }

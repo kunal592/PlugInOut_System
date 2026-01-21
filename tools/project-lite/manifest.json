@@ -1,0 +1,15 @@
+{
+    "slug": "project-lite",
+    "name": "Project Management Lite",
+    "description": "Manage projects with milestones, task grouping, and team member assignment.",
+    "version": "1.0.0",
+    "enabled": true,
+    "price": 29900,
+    "pricingType": "ONE_TIME",
+    "category": "productivity",
+    "routes": "/tools/project-lite",
+    "icon": "folder-kanban",
+    "permissions": [
+        "USER"
+    ]
+}

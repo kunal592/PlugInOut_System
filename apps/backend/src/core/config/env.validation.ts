@@ -8,7 +8,7 @@ const envSchema = z.object({
         .default('development'),
 
     // Server
-    PORT: z.coerce.number().default(3001),
+    API_PORT: z.coerce.number().default(3001),
 
     // Database
     DATABASE_URL: z.string().url(),

@@ -63,7 +63,7 @@ export class AdminService {
             this.prisma.subscription.count({ where: { status: 'ACTIVE' } }),
             this.prisma.event.count({
                 where: {
-                    timestamp: {
+                    createdAt: {
                         gte: new Date(Date.now() - 24 * 60 * 60 * 1000), // Last 24 hours
                     },
                 },
@@ -145,7 +145,7 @@ export class AdminService {
         });
 
         // If price changed, emit event
-        if (update.price !== undefined && update.price !== tool.price) {
+        if (update.price !== undefined && update.price !== tool.basePrice) {
             await this.eventPublisher.publish({
                 type: EventTypes.ADMIN_PRICE_CHANGE,
                 aggregateType: 'Tool',
@@ -153,7 +153,7 @@ export class AdminService {
                 userId: adminId,
                 payload: {
                     slug,
-                    oldPrice: tool.price,
+                    oldPrice: tool.basePrice,
                     newPrice: update.price,
                 },
             });
@@ -446,7 +446,7 @@ export class AdminService {
     async getRecentEvents(limit: number = 50) {
         return this.prisma.event.findMany({
             take: limit,
-            orderBy: { timestamp: 'desc' },
+            orderBy: { createdAt: 'desc' },
             include: {
                 user: {
                     select: {

@@ -1,0 +1,64 @@
+// OKR / Goal Tracker - Database Schema
+// Prefix: tool_okr_*
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+generator client {
+    provider = "prisma-client-js"
+    output   = "../../../node_modules/@prisma/client-tool-okr-tracker"
+}
+
+model tool_okr_Objective {
+    id          String   @id @default(uuid())
+    userId      String
+    title       String
+    description String?
+    period      String   // Q1-2026, Q2-2026, etc.
+    status      String   @default("IN_PROGRESS") // NOT_STARTED, IN_PROGRESS, AT_RISK, COMPLETED
+    progress    Float    @default(0) // 0-100
+    startDate   DateTime?
+    endDate     DateTime?
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+
+    keyResults  tool_okr_KeyResult[]
+
+    @@index([userId])
+    @@index([period])
+    @@map("tool_okr_objectives")
+}
+
+model tool_okr_KeyResult {
+    id            String   @id @default(uuid())
+    objectiveId   String
+    title         String
+    targetValue   Float    @default(100)
+    currentValue  Float    @default(0)
+    unit          String   @default("%") // %, $, #, etc.
+    status        String   @default("IN_PROGRESS")
+    createdAt     DateTime @default(now())
+    updatedAt     DateTime @updatedAt
+
+    objective     tool_okr_Objective @relation(fields: [objectiveId], references: [id], onDelete: Cascade)
+
+    checkIns      tool_okr_CheckIn[]
+
+    @@index([objectiveId])
+    @@map("tool_okr_key_results")
+}
+
+model tool_okr_CheckIn {
+    id          String   @id @default(uuid())
+    keyResultId String
+    value       Float
+    notes       String?
+    createdAt   DateTime @default(now())
+
+    keyResult   tool_okr_KeyResult @relation(fields: [keyResultId], references: [id], onDelete: Cascade)
+
+    @@index([keyResultId])
+    @@map("tool_okr_check_ins")
+}

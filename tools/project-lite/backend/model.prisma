@@ -1,0 +1,82 @@
+// Project Management Lite - Database Schema
+// Prefix: tool_project_*
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+generator client {
+    provider = "prisma-client-js"
+    output   = "../../../node_modules/@prisma/client-tool-project-lite"
+}
+
+model tool_project_Project {
+    id          String   @id @default(uuid())
+    userId      String
+    name        String
+    description String?
+    status      String   @default("ACTIVE") // ACTIVE, ON_HOLD, COMPLETED, ARCHIVED
+    color       String   @default("#6366F1")
+    startDate   DateTime?
+    endDate     DateTime?
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+
+    milestones  tool_project_Milestone[]
+    tasks       tool_project_Task[]
+    members     tool_project_Member[]
+
+    @@index([userId])
+    @@map("tool_project_projects")
+}
+
+model tool_project_Milestone {
+    id          String    @id @default(uuid())
+    projectId   String
+    title       String
+    description String?
+    dueDate     DateTime?
+    status      String    @default("PENDING") // PENDING, IN_PROGRESS, COMPLETED
+    createdAt   DateTime  @default(now())
+
+    project     tool_project_Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+    @@index([projectId])
+    @@map("tool_project_milestones")
+}
+
+model tool_project_Task {
+    id          String    @id @default(uuid())
+    projectId   String
+    milestoneId String?
+    title       String
+    description String?
+    status      String    @default("TODO") // TODO, IN_PROGRESS, DONE
+    priority    String    @default("MEDIUM")
+    assigneeId  String?
+    dueDate     DateTime?
+    createdAt   DateTime  @default(now())
+    updatedAt   DateTime  @updatedAt
+
+    project     tool_project_Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+    @@index([projectId])
+    @@index([milestoneId])
+    @@map("tool_project_tasks")
+}
+
+model tool_project_Member {
+    id          String   @id @default(uuid())
+    projectId   String
+    userId      String
+    name        String
+    email       String?
+    role        String   @default("MEMBER") // OWNER, ADMIN, MEMBER
+    createdAt   DateTime @default(now())
+
+    project     tool_project_Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+    @@unique([projectId, userId])
+    @@map("tool_project_members")
+}

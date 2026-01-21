@@ -1,0 +1,15 @@
+{
+    "slug": "time-tracker",
+    "name": "Time Tracker",
+    "description": "Track work hours with timers, manual entries, and generate daily/weekly summaries.",
+    "version": "1.0.0",
+    "enabled": true,
+    "price": 9900,
+    "pricingType": "ONE_TIME",
+    "category": "productivity",
+    "routes": "/tools/time-tracker",
+    "icon": "clock",
+    "permissions": [
+        "USER"
+    ]
+}

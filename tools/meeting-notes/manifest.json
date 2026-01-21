@@ -1,0 +1,15 @@
+{
+    "slug": "meeting-notes",
+    "name": "Meeting Notes",
+    "description": "Capture meeting notes, organize by tags, and search through your meeting history.",
+    "version": "1.0.0",
+    "enabled": true,
+    "price": 0,
+    "pricingType": "FREE",
+    "category": "productivity",
+    "routes": "/tools/meeting-notes",
+    "icon": "file-edit",
+    "permissions": [
+        "USER"
+    ]
+}

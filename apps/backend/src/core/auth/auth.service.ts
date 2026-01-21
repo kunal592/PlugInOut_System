@@ -130,7 +130,7 @@ export class AuthService {
             throw new UnauthorizedException('Invalid refresh token');
         }
 
-        if (tokenRecord.isRevoked) {
+        if (tokenRecord.revokedAt) {
             throw new UnauthorizedException('Refresh token has been revoked');
         }
 
@@ -145,7 +145,7 @@ export class AuthService {
         // Revoke old refresh token (token rotation)
         await this.prisma.refreshToken.update({
             where: { id: tokenRecord.id },
-            data: { isRevoked: true },
+            data: { revokedAt: new Date() },
         });
 
         return this.generateTokens(tokenRecord.user);
@@ -157,7 +157,7 @@ export class AuthService {
     async logout(refreshToken: string): Promise<void> {
         await this.prisma.refreshToken.updateMany({
             where: { token: refreshToken },
-            data: { isRevoked: true },
+            data: { revokedAt: new Date() },
         });
 
         this.logger.debug('User logged out, refresh token revoked');
@@ -169,7 +169,7 @@ export class AuthService {
     async revokeAllTokens(userId: string): Promise<void> {
         await this.prisma.refreshToken.updateMany({
             where: { userId },
-            data: { isRevoked: true },
+            data: { revokedAt: new Date() },
         });
 
         this.logger.log(`All refresh tokens revoked for user: ${userId}`);
@@ -276,7 +276,7 @@ export class AuthService {
         await this.prisma.refreshToken.deleteMany({
             where: {
                 userId,
-                OR: [{ expiresAt: { lt: new Date() } }, { isRevoked: true }],
+                OR: [{ expiresAt: { lt: new Date() } }, { revokedAt: { not: null } }],
             },
         });
     }

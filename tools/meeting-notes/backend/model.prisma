@@ -1,0 +1,32 @@
+// Meeting Notes - Database Schema
+// Prefix: tool_meeting_*
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+generator client {
+    provider = "prisma-client-js"
+    output   = "../../../node_modules/@prisma/client-tool-meeting-notes"
+}
+
+model tool_meeting_Meeting {
+    id          String   @id @default(uuid())
+    userId      String
+    title       String
+    date        DateTime
+    duration    Int?     // Duration in minutes
+    attendees   String[] @default([])
+    tags        String[] @default([])
+    content     String   @db.Text
+    summary     String?
+    actionItems String[] @default([])
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+
+    @@index([userId])
+    @@index([date])
+    @@index([tags])
+    @@map("tool_meeting_meetings")
+}

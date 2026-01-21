@@ -1,0 +1,15 @@
+{
+    "slug": "okr-tracker",
+    "name": "OKR / Goal Tracker",
+    "description": "Set objectives, define key results, and track progress towards your goals.",
+    "version": "1.0.0",
+    "enabled": true,
+    "price": 24900,
+    "pricingType": "ONE_TIME",
+    "category": "productivity",
+    "routes": "/tools/okr-tracker",
+    "icon": "target",
+    "permissions": [
+        "USER"
+    ]
+}

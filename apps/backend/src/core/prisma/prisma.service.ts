@@ -1,0 +1,65 @@
+import { Injectable, OnModuleInit, OnModuleDestroy, Logger } from '@nestjs/common';
+import { PrismaClient } from '@prisma/client';
+
+@Injectable()
+export class PrismaService
+    extends PrismaClient
+    implements OnModuleInit, OnModuleDestroy {
+    private readonly logger = new Logger(PrismaService.name);
+
+    constructor() {
+        super({
+            log: [
+                { emit: 'event', level: 'query' },
+                { emit: 'stdout', level: 'info' },
+                { emit: 'stdout', level: 'warn' },
+                { emit: 'stdout', level: 'error' },
+            ],
+            errorFormat: 'colorless',
+        });
+    }
+
+    async onModuleInit() {
+        this.logger.log('Connecting to database...');
+        await this.$connect();
+        this.logger.log('Database connection established');
+
+        // Query logging in development
+        if (process.env.NODE_ENV === 'development') {
+            // @ts-expect-error - Prisma event types
+            this.$on('query', (e: { query: string; duration: number }) => {
+                this.logger.debug(`Query: ${e.query} (${e.duration}ms)`);
+            });
+        }
+    }
+
+    async onModuleDestroy() {
+        this.logger.log('Disconnecting from database...');
+        await this.$disconnect();
+        this.logger.log('Database connection closed');
+    }
+
+    /**
+     * Clean database for testing purposes
+     * WARNING: Only use in test environment
+     */
+    async cleanDatabase() {
+        if (process.env.NODE_ENV !== 'test') {
+            throw new Error('cleanDatabase can only be called in test environment');
+        }
+
+        const tablenames = await this.$queryRaw<
+            Array<{ tablename: string }>
+        >`SELECT tablename FROM pg_tables WHERE schemaname='public'`;
+
+        const tables = tablenames
+            .map(({ tablename }) => tablename)
+            .filter((name) => name !== '_prisma_migrations')
+            .map((name) => `"public"."${name}"`)
+            .join(', ');
+
+        if (tables.length > 0) {
+            await this.$executeRawUnsafe(`TRUNCATE TABLE ${tables} CASCADE;`);
+        }
+    }
+}

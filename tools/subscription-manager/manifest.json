@@ -1,0 +1,15 @@
+{
+    "slug": "subscription-manager",
+    "name": "Subscription Manager",
+    "description": "Manage your customer subscriptions, renewal dates, and plans.",
+    "version": "1.0.0",
+    "enabled": true,
+    "price": 29900,
+    "pricingType": "ONE_TIME",
+    "category": "sales",
+    "routes": "/tools/subscription-manager",
+    "icon": "repeat",
+    "permissions": [
+        "USER"
+    ]
+}

@@ -1,0 +1,241 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// USER MANAGEMENT
+// ============================================
+
+model User {
+  id              String    @id @default(uuid())
+  email           String    @unique
+  passwordHash    String?
+  firstName       String?
+  lastName        String?
+  role            UserRole  @default(USER)
+  isActive        Boolean   @default(true)
+  emailVerified   Boolean   @default(false)
+
+  // OAuth (future)
+  authProvider    String?
+  providerUserId  String?
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  lastLoginAt     DateTime?
+
+  // Relations
+  refreshTokens   RefreshToken[]
+  userTools       UserTool[]
+  subscriptions   Subscription[]
+  payments        Payment[]
+  events          Event[]
+
+  @@map("users")
+}
+
+enum UserRole {
+  USER
+  ADMIN
+  SUPER_ADMIN
+}
+
+// ============================================
+// REFRESH TOKENS (JWT ROTATION)
+// ============================================
+
+model RefreshToken {
+  id          String   @id @default(uuid())
+  token       String   @unique
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt   DateTime
+  revokedAt   DateTime?
+  createdAt   DateTime @default(now())
+
+  @@index([userId])
+  @@index([token])
+  @@map("refresh_tokens")
+}
+
+// ============================================
+// TOOL REGISTRY (PLUGIN SOURCE OF TRUTH)
+// ============================================
+
+model Tool {
+  id            String        @id @default(uuid())
+  slug          String        @unique
+  name          String
+  description   String?
+  version       String        @default("1.0.0")
+
+  // Pricing
+  pricingType   PricingType   @default(FREE)
+  basePrice     Int           @default(0) // in paise
+  currency      String        @default("INR")
+
+  enabled       Boolean       @default(true)
+  isPublic      Boolean       @default(true)
+
+  routes        String
+  
+  // NOTE: Prisma does not support @default([USER]) for specific DBs in schema
+  // logic handled in application layer
+  permissions   UserRole[]
+
+  icon          String?
+  category      String?
+
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  userTools     UserTool[]
+  payments      Payment[]     // Added back-relation
+
+  @@map("tools")
+}
+
+enum PricingType {
+  FREE
+  ONE_TIME
+  SUBSCRIPTION
+}
+
+// ============================================
+// USER ↔ TOOL ACCESS (ACCESS ENGINE)
+// ============================================
+
+model UserTool {
+  id            String            @id @default(uuid())
+  userId        String
+  user          User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  toolId        String
+  tool          Tool              @relation(fields: [toolId], references: [id], onDelete: Cascade)
+
+  status        ToolAccessStatus  @default(ACTIVE)
+  expiresAt     DateTime?
+
+  purchasedAt   DateTime          @default(now())
+  activatedAt   DateTime?
+
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  @@unique([userId, toolId])
+  @@index([userId])
+  @@index([toolId])
+  @@map("user_tools")
+}
+
+enum ToolAccessStatus {
+  ACTIVE
+  EXPIRED
+  REVOKED
+  SUSPENDED
+}
+
+// ============================================
+// RAZORPAY SUBSCRIPTIONS
+// ============================================
+
+model Subscription {
+  id                    String               @id @default(uuid())
+  userId                String
+  user                  User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Razorpay identifiers
+  razorpaySubscriptionId String              @unique
+  razorpayPlanId         String
+  razorpayCustomerId     String
+
+  status                SubscriptionStatus   @default(ACTIVE)
+
+  currentPeriodStart     DateTime?
+  currentPeriodEnd       DateTime?
+
+  cancelAtPeriodEnd      Boolean              @default(false)
+  cancelledAt            DateTime?
+
+  createdAt              DateTime             @default(now())
+  updatedAt              DateTime             @updatedAt
+
+  @@index([userId])
+  @@map("subscriptions")
+}
+
+enum SubscriptionStatus {
+  CREATED
+  ACTIVE
+  HALTED
+  COMPLETED
+  CANCELLED
+}
+
+// ============================================
+// PAYMENTS (ONE-TIME + SUBSCRIPTION INVOICES)
+// ============================================
+
+model Payment {
+  id                String           @id @default(uuid())
+  userId            String
+  user              User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  toolId            String?
+  tool              Tool?             @relation(fields: [toolId], references: [id])
+
+  razorpayOrderId   String?
+  razorpayPaymentId String?
+  razorpayInvoiceId String?
+
+  amount            Int              // paise
+  currency          String           @default("INR")
+
+  status            PaymentStatus
+  method            String?
+
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+
+  @@index([userId])
+  @@index([razorpayOrderId])
+  @@map("payments")
+}
+
+enum PaymentStatus {
+  CREATED
+  AUTHORIZED
+  CAPTURED
+  FAILED
+  REFUNDED
+}
+
+// ============================================
+// EVENT STORE (AUDIT + ASYNC)
+// ============================================
+
+model Event {
+  id            String   @id @default(uuid())
+  type          String   // TOOL_PURCHASED, PAYMENT_CAPTURED
+  version       String   @default("1.0")
+
+  aggregateType String?
+  aggregateId   String?
+
+  payload       Json
+  source        String?  // billing, auth, admin, system
+
+  userId        String?
+  user          User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  createdAt     DateTime @default(now())
+
+  @@index([type])
+  @@index([aggregateType, aggregateId])
+  @@index([userId])
+  @@map("events")
+}

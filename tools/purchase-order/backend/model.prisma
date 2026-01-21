@@ -1,0 +1,60 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../../../node_modules/@prisma/client-tool-po"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Vendor {
+  id          String   @id @default(uuid())
+  userId      String
+  name        String
+  email       String
+  address     String?
+  
+  orders      PurchaseOrder[]
+
+  createdAt   DateTime @default(now())
+
+  @@index([userId])
+  @@map("tool_po_vendors")
+}
+
+model PurchaseOrder {
+  id          String   @id @default(uuid())
+  userId      String
+  
+  vendorId    String
+  vendor      Vendor   @relation(fields: [vendorId], references: [id])
+  
+  poNumber    String
+  orderDate   DateTime
+  expectedDate DateTime?
+  
+  status      String   @default("DRAFT") // DRAFT, SENT, RECEIVED
+  totalAmount Int      // paise
+
+  items       OrderItem[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+  @@map("tool_po_orders")
+}
+
+model OrderItem {
+  id          String   @id @default(uuid())
+  orderId     String
+  order       PurchaseOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  
+  itemName    String
+  quantity    Int
+  unitPrice   Int
+  total       Int
+
+  @@map("tool_po_items")
+}

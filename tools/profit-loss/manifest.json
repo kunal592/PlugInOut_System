@@ -1,0 +1,15 @@
+{
+    "slug": "profit-loss",
+    "name": "Profit & Loss Reports",
+    "description": "Generate P&L statements. Record income and expenses manually or import data.",
+    "version": "1.0.0",
+    "enabled": true,
+    "price": 14900,
+    "pricingType": "ONE_TIME",
+    "category": "finance",
+    "routes": "/tools/profit-loss",
+    "icon": "bar-chart-2",
+    "permissions": [
+        "USER"
+    ]
+}

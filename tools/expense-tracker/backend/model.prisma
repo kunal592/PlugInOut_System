@@ -1,0 +1,45 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../../../node_modules/@prisma/client-tool-expense"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Expense {
+  id          String   @id @default(uuid())
+  userId      String
+  amount      Int      // In paise
+  currency    String   @default("INR")
+  description String
+  date        DateTime @default(now())
+  
+  categoryId  String?
+  category    Category? @relation(fields: [categoryId], references: [id])
+  
+  receiptUrl  String?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+  @@index([date])
+  @@map("tool_expense_entries")
+}
+
+model Category {
+  id          String   @id @default(uuid())
+  userId      String
+  name        String
+  color       String?
+
+  expenses    Expense[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([userId, name])
+  @@map("tool_expense_categories")
+}

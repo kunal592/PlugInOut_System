@@ -1,0 +1,41 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../../../node_modules/@prisma/client-tool-invoice"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Invoice {
+  id          String   @id @default(uuid())
+  userId      String
+  clientName  String
+  clientEmail String?
+  amount      Int      // Total in paise
+  taxAmount   Int      @default(0) // Tax in paise
+  status      String   @default("DRAFT") // DRAFT, SENT, PAID
+  dueDate     DateTime?
+  
+  items       InvoiceItem[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+  @@map("tool_invoice_invoices")
+}
+
+model InvoiceItem {
+  id          String   @id @default(uuid())
+  invoiceId   String
+  invoice     Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  
+  description String
+  quantity    Int
+  unitPrice   Int      // in paise
+  total       Int      // in paise
+
+  @@map("tool_invoice_items")
+}

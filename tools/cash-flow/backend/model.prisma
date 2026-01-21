@@ -1,0 +1,26 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../../../node_modules/@prisma/client-tool-cashflow"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Transaction {
+  id          String   @id @default(uuid())
+  userId      String
+  date        DateTime
+  amount      Int      // paise, positive for inflow, negative for outflow
+  description String
+  category    String? 
+  
+  // Future projection support
+  isProjection Boolean @default(false)
+
+  createdAt   DateTime @default(now())
+
+  @@index([userId, date])
+  @@map("tool_cashflow_tx")
+}

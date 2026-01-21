@@ -1,0 +1,28 @@
+{
+  "name": "pluginout-system",
+  "version": "1.0.0",
+  "description": "Enterprise SaaS Platform with Plugin Architecture",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "start": "turbo run start",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "db:migrate": "npm run db:migrate --workspace=@pluginout/backend",
+    "db:generate": "npm run db:generate --workspace=@pluginout/backend",
+    "db:seed": "npm run db:seed --workspace=@pluginout/backend"
+  },
+  "devDependencies": {
+    "turbo": "^2.0.0",
+    "typescript": "^5.3.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "packageManager": "npm@10.0.0"
+}

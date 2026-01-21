@@ -1,0 +1,15 @@
+{
+    "slug": "purchase-order",
+    "name": "Purchase Order Generator",
+    "description": "Create and manage Purchase Orders for your vendors.",
+    "version": "1.0.0",
+    "enabled": true,
+    "price": 19900,
+    "pricingType": "ONE_TIME",
+    "category": "operations",
+    "routes": "/tools/purchase-order",
+    "icon": "clipboard",
+    "permissions": [
+        "USER"
+    ]
+}

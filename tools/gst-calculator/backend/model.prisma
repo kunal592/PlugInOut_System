@@ -1,0 +1,26 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../../../node_modules/@prisma/client-tool-gst"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model CalculationHistory {
+  id          String   @id @default(uuid())
+  userId      String?  // Optional, can be used anonymously if allowed
+  
+  amount      Float
+  gstRate     Float
+  type        String   // INCLUSIVE or EXCLUSIVE
+  
+  taxAmount   Float
+  totalAmount Float
+  
+  createdAt   DateTime @default(now())
+
+  @@index([userId])
+  @@map("tool_gst_history")
+}

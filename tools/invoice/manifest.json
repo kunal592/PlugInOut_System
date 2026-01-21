@@ -1,0 +1,15 @@
+{
+    "slug": "invoice",
+    "name": "Invoice Generator",
+    "description": "Create, edit, and send professional invoices. Includes tax calculation and PDF export.",
+    "version": "1.0.0",
+    "enabled": true,
+    "price": 19900,
+    "pricingType": "ONE_TIME",
+    "category": "finance",
+    "routes": "/tools/invoice",
+    "icon": "file-text",
+    "permissions": [
+        "USER"
+    ]
+}

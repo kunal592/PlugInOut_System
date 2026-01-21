@@ -1,0 +1,15 @@
+{
+    "slug": "cash-flow",
+    "name": "Cash Flow Tracker",
+    "description": "Visualize your cash flow, track inflows/outflows, and project future balances.",
+    "version": "1.0.0",
+    "enabled": true,
+    "price": 9900,
+    "pricingType": "ONE_TIME",
+    "category": "finance",
+    "routes": "/tools/cash-flow",
+    "icon": "activity",
+    "permissions": [
+        "USER"
+    ]
+}

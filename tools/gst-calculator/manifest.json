@@ -1,0 +1,15 @@
+{
+    "slug": "gst-calculator",
+    "name": "GST Calculator",
+    "description": "Calculate GST for Indian goods and services quickly. Supports inclusive/exclusive calculations.",
+    "version": "1.0.0",
+    "enabled": true,
+    "price": 0,
+    "pricingType": "FREE",
+    "category": "finance",
+    "routes": "/tools/gst-calculator",
+    "icon": "calculator",
+    "permissions": [
+        "USER"
+    ]
+}

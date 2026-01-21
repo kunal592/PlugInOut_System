@@ -1,0 +1,51 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../../../node_modules/@prisma/client-tool-submanager"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Customer {
+  id          String   @id @default(uuid())
+  userId      String   // The business owner (app user)
+  name        String
+  email       String
+  phone       String?
+  
+  subscriptions CustomerSubscription[]
+
+  createdAt   DateTime @default(now())
+  
+  @@index([userId])
+  @@map("tool_submgr_customers")
+}
+
+model Plan {
+  id          String   @id @default(uuid())
+  userId      String
+  name        String
+  price       Int      // paise
+  interval    String   // MONTHLY, YEARLY
+  
+  subscriptions CustomerSubscription[]
+
+  @@map("tool_submgr_plans")
+}
+
+model CustomerSubscription {
+  id          String   @id @default(uuid())
+  customerId  String
+  customer    Customer @relation(fields: [customerId], references: [id])
+  
+  planId      String
+  plan        Plan     @relation(fields: [planId], references: [id])
+  
+  startDate   DateTime
+  renewalDate DateTime
+  status      String   // ACTIVE, CANCELLED, EXPIRED
+
+  @@map("tool_submgr_subs")
+}

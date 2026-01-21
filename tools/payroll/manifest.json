@@ -1,0 +1,15 @@
+{
+    "slug": "payroll",
+    "name": "Payroll Management",
+    "description": "Manage employee salaries, generate payslips, and track payroll history.",
+    "version": "1.0.0",
+    "enabled": true,
+    "price": 49900,
+    "pricingType": "SUBSCRIPTION",
+    "category": "hr",
+    "routes": "/tools/payroll",
+    "icon": "users",
+    "permissions": [
+        "USER"
+    ]
+}

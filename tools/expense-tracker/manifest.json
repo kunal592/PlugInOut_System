@@ -1,0 +1,15 @@
+{
+    "slug": "expense-tracker",
+    "name": "Expense Tracker",
+    "description": "Track business expenses, categorize them, and view monthly summaries.",
+    "version": "1.0.0",
+    "enabled": true,
+    "price": 9900,
+    "pricingType": "SUBSCRIPTION",
+    "category": "finance",
+    "routes": "/tools/expense-tracker",
+    "icon": "pie-chart",
+    "permissions": [
+        "USER"
+    ]
+}

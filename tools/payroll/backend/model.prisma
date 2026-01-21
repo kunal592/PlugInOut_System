@@ -1,0 +1,69 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../../../node_modules/@prisma/client-tool-payroll"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Employee {
+  id          String   @id @default(uuid())
+  userId      String
+  name        String
+  email       String
+  designation String
+  joinDate    DateTime
+  
+  // Salary Structure (simplified)
+  basicSalary Int      // paise
+  hra         Int      @default(0) // paise
+  allowances  Int      @default(0) // paise
+  
+  payslips    Payslip[]
+
+  status      String   @default("ACTIVE") // ACTIVE, INACTIVE
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+  @@map("tool_payroll_employees")
+}
+
+model PayrollRun {
+  id          String   @id @default(uuid())
+  userId      String
+  month       Int
+  year        Int
+  totalAmount Int      // paise
+  status      String   @default("DRAFT") // DRAFT, COMPLETED
+
+  payslips    Payslip[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([userId, month, year])
+  @@map("tool_payroll_runs")
+}
+
+model Payslip {
+  id          String   @id @default(uuid())
+  employeeId  String
+  employee    Employee @relation(fields: [employeeId], references: [id])
+  
+  runId       String
+  run         PayrollRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+
+  basic       Int
+  hra         Int
+  allowances  Int
+  deductions  Int      @default(0)
+  netPay      Int
+
+  generatedAt DateTime @default(now())
+
+  @@map("tool_payroll_payslips")
+}

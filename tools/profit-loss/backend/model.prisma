@@ -1,0 +1,39 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../../../node_modules/@prisma/client-tool-pl"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model LedgerEntry {
+  id          String   @id @default(uuid())
+  userId      String
+  date        DateTime
+  description String
+  amount      Int      // paise
+  type        String   // INCOME, EXPENSE
+  category    String?  
+
+  createdAt   DateTime @default(now())
+
+  @@index([userId, date])
+  @@map("tool_pl_entries")
+}
+
+model Report {
+  id          String   @id @default(uuid())
+  userId      String
+  name        String
+  startDate   DateTime
+  endDate     DateTime
+  totalIncome Int
+  totalExpense Int
+  netProfit   Int
+
+  createdAt   DateTime @default(now())
+
+  @@map("tool_pl_reports")
+}

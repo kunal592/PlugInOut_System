@@ -23,29 +23,7 @@ The `tools/` directory contains 8 independent business tools. Each tool is a sel
 
 ## Setup & Running
 
-1. **Install Dependencies**
-   ```bash
-   npm install
-   ```
-
-2. **Database Setup**
-   ```bash
-   docker-compose -f docker-compose.dev.yml up -d
-   npm run db:migrate
-   npm run db:seed
-   ```
-
-   **Important**: Each tool has its own Prisma client. You must generate them:
-   ```bash
-   # Example for Invoice Tool
-   cd tools/invoice/backend && npx prisma generate
-   # (Repeat for all tools or write a script)
-   ```
-
-3. **Run Platform**
-   ```bash
-   npm run dev
-   ```
+For detailed setup instructions, please see the [Startup Guide](docs/startup-guide.md).
 
 ## Architecture Rules
 1. **Core Only**: Auth, Billing (Razorpay), User Management.
